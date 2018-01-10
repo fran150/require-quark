@@ -64,7 +64,7 @@ define(['text'], function (text) {
                 onLoad(null);
             } else {
                 if (config.isBuild) {
-                    req([name + "/main"], function (value) {
+                    req(["json!" + name + "/main.json"], function () {
                         text.get(req.toUrl(name + "/main.json"), function (data) {
                             eval("var qConfig = " + data);
 
@@ -93,18 +93,22 @@ define(['text'], function (text) {
                                 } else {
                                     configNamespace('', qConfig.namespaces, name, req, onLoad);
                                 }
-                            }                            
+                            }
                         });  
-                    });                    
+                    });
                 } else {
-                    req([name + "/main"], function (value) {
-                        console.log(value);
-                        onLoad(value);
-                    });                
+                    req(["quark", "json!" + name + "/main.json"], function ($$, moduleConf) {
+                        var moduleData = {
+                            id: name + "/main",
+                            uri: req.toUrl(name + "/main")
+                        }
+
+                        $$.module(moduleData, moduleConf);
+
+                        onLoad(moduleConf);
+                    });
                 }
             }
-        },
-        write: function (pluginName, moduleName, write) {
         }
     }
 });
